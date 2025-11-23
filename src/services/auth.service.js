@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../config/api.config';
 import { MOCK_USERS, delay, generateMockToken } from '../mocks/mockData';
 
 // Variable para activar/desactivar modo mock
-const USE_MOCK = true; // Cambiar a false cuando el backend esté listo
+const USE_MOCK = false; // ✅ CONECTADO AL BACKEND REAL
 
 const AuthService = {
   // Login de usuario

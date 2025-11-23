@@ -1,7 +1,7 @@
 // Configuración de la API Backend
 export const API_CONFIG = {
-  // URL base del backend Spring Boot - CAMBIAR según tu configuración
-  BASE_URL: 'http://localhost:8080/api',
+  // URL base del backend NestJS - ✅ CONFIGURADO PARA LOCALHOST:3000
+  BASE_URL: 'http://localhost:3000/api/v1',
   
   // Versiones de la API
   V1: '/v1',
