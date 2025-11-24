@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MOCK_PRODUCTOS } from '../mocks/mockData';
 import ProductoService from '../services/producto.service';
 
 function Tienda() {
@@ -19,13 +18,11 @@ function Tienda() {
 
   const loadProductos = async () => {
     try {
-      // TODO: Cuando el backend esté listo, descomentar esto:
-      // const data = await ProductoService.getAll();
-      
-      // MOCK temporal
-      setProductos(MOCK_PRODUCTOS);
+      const data = await ProductoService.getAll();
+      setProductos(data);
     } catch (error) {
       console.error('Error al cargar productos:', error);
+      alert('Error al cargar productos: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -173,7 +170,7 @@ function Tienda() {
                   </div>
                   <div className="product-info">
                     <h3>{producto.nombre}</h3>
-                    <p className="product-set">📦 {producto.set}</p>
+                    <p className="product-set">📦 {producto.setPokemon || producto.set}</p>
                     <p className="product-desc">{producto.descripcion}</p>
                     <div className="product-footer">
                       <span className="product-price">

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProductoService from '../services/producto.service';
-import { MOCK_PRODUCTOS, MOCK_CATEGORIAS } from '../mocks/mockData';
+import CategoriaService from '../services/categoria.service';
 
 function Productos() {
   const { user, logout } = useAuth();
@@ -19,7 +19,7 @@ function Productos() {
     stock: '',
     imagen: '',
     rareza: '',
-    set: '',
+    setPokemon: '',
     categoriaId: ''
   });
 
@@ -30,11 +30,11 @@ function Productos() {
 
   const loadProductos = async () => {
     try {
-      // TODO: Cuando el backend esté listo
-      // const data = await ProductoService.getAll();
-      setProductos(MOCK_PRODUCTOS);
+      const data = await ProductoService.getAll();
+      setProductos(data);
     } catch (error) {
       console.error('Error al cargar productos:', error);
+      alert('Error al cargar productos: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -42,9 +42,11 @@ function Productos() {
 
   const loadCategorias = async () => {
     try {
-      setCategorias(MOCK_CATEGORIAS);
+      const data = await CategoriaService.getAll();
+      setCategorias(data);
     } catch (error) {
       console.error('Error al cargar categorías:', error);
+      alert('Error al cargar categorías: ' + (error.message || 'Error desconocido'));
     }
   };
 
@@ -52,20 +54,32 @@ function Productos() {
     e.preventDefault();
     
     try {
+      // Preparar datos convirtiendo strings a números donde corresponda
+      const productoData = {
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        precio: parseFloat(formData.precio), // Convertir a número
+        stock: parseInt(formData.stock, 10), // Convertir a número entero
+        imagen: formData.imagen,
+        rareza: formData.rareza,
+        setPokemon: formData.setPokemon, // Usar setPokemon en lugar de set
+        categoriaId: parseInt(formData.categoriaId, 10) // Convertir a número entero
+      };
+
       if (editingProducto) {
-        // TODO: await ProductoService.update(editingProducto.id, formData);
-        console.log('Actualizando producto:', formData);
+        await ProductoService.update(editingProducto.id, productoData);
+        alert('Producto actualizado exitosamente');
       } else {
-        // TODO: await ProductoService.create(formData);
-        console.log('Creando producto:', formData);
+        await ProductoService.create(productoData);
+        alert('Producto creado exitosamente');
       }
       
       setShowModal(false);
       resetForm();
-      loadProductos();
-      alert('Producto guardado exitosamente');
+      await loadProductos();
     } catch (error) {
-      alert('Error al guardar producto: ' + error.message);
+      console.error('Error al guardar producto:', error);
+      alert('Error al guardar producto: ' + (error.message || 'Error desconocido'));
     }
   };
 
@@ -74,12 +88,12 @@ function Productos() {
     setFormData({
       nombre: producto.nombre,
       descripcion: producto.descripcion,
-      precio: producto.precio,
-      stock: producto.stock,
-      imagen: producto.imagen,
+      precio: producto.precio.toString(),
+      stock: producto.stock.toString(),
+      imagen: producto.imagen || '',
       rareza: producto.rareza,
-      set: producto.set,
-      categoriaId: producto.categoriaId
+      setPokemon: producto.setPokemon || producto.set || '',
+      categoriaId: producto.categoriaId?.toString() || producto.categoria?.id?.toString() || ''
     });
     setShowModal(true);
   };
@@ -88,12 +102,12 @@ function Productos() {
     if (!confirm('¿Estás seguro de eliminar este producto?')) return;
     
     try {
-      // TODO: await ProductoService.delete(id);
-      console.log('Eliminando producto:', id);
-      loadProductos();
-      alert('Producto eliminado');
+      await ProductoService.delete(id);
+      alert('Producto eliminado exitosamente');
+      await loadProductos();
     } catch (error) {
-      alert('Error al eliminar producto: ' + error.message);
+      console.error('Error al eliminar producto:', error);
+      alert('Error al eliminar producto: ' + (error.message || 'Error desconocido'));
     }
   };
 
@@ -105,7 +119,7 @@ function Productos() {
       stock: '',
       imagen: '',
       rareza: '',
-      set: '',
+      setPokemon: '',
       categoriaId: ''
     });
     setEditingProducto(null);
@@ -193,7 +207,7 @@ function Productos() {
                       </span>
                     </td>
                     <td>{producto.rareza}</td>
-                    <td>{producto.set}</td>
+                    <td>{producto.setPokemon || producto.set}</td>
                     <td>
                       <button 
                         onClick={() => handleEdit(producto)}
@@ -302,13 +316,14 @@ function Productos() {
                   </div>
                   
                   <div className="form-group">
-                    <label>Set *</label>
+                    <label>Set Pokémon *</label>
                     <input
                       type="text"
-                      name="set"
-                      value={formData.set}
+                      name="setPokemon"
+                      value={formData.setPokemon}
                       onChange={handleInputChange}
                       required
+                      placeholder="Ej: Vivid Voltage"
                     />
                   </div>
                 </div>

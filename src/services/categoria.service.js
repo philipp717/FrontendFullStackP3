@@ -25,7 +25,7 @@ const CategoriaService = {
   // Actualizar categoría
   async update(id, categoriaData) {
     try {
-      const response = await apiClient.put(API_ENDPOINTS.CATEGORIAS.UPDATE(id), categoriaData);
+      const response = await apiClient.patch(API_ENDPOINTS.CATEGORIAS.UPDATE(id), categoriaData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Error al actualizar categoría' };

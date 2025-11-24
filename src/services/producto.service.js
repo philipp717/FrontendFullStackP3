@@ -35,7 +35,7 @@ const ProductoService = {
   // Actualizar producto
   async update(id, productoData) {
     try {
-      const response = await apiClient.put(API_ENDPOINTS.PRODUCTOS.UPDATE(id), productoData);
+      const response = await apiClient.patch(API_ENDPOINTS.PRODUCTOS.UPDATE(id), productoData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Error al actualizar producto' };

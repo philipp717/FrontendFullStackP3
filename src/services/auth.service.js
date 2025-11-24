@@ -37,7 +37,13 @@ const AuthService = {
     
     // MODO REAL - Usar cuando el backend esté listo
     try {
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
+      // Adaptar el formato para el backend NestJS
+      const loginData = {
+        usernameOrEmail: credentials.username, // El backend espera usernameOrEmail
+        password: credentials.password
+      };
+      
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, loginData);
       
       // Guardar token y datos del usuario
       if (response.data.token) {

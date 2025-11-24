@@ -35,7 +35,7 @@ const UsuarioService = {
   // Actualizar usuario
   async update(id, usuarioData) {
     try {
-      const response = await apiClient.put(API_ENDPOINTS.USUARIOS.UPDATE(id), usuarioData);
+      const response = await apiClient.patch(API_ENDPOINTS.USUARIOS.UPDATE(id), usuarioData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Error al actualizar usuario' };
