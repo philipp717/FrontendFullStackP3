@@ -18,7 +18,8 @@ const CategoriaService = {
       const response = await apiClient.post(API_ENDPOINTS.CATEGORIAS.CREATE, categoriaData);
       return response.data;
     } catch (error) {
-      throw error.response?.data || { message: 'Error al crear categoría' };
+      const errorMessage = error.response?.data?.message || error.message || 'Error al crear categoría';
+      throw { message: errorMessage };
     }
   },
 

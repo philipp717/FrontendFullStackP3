@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import CategoriaService from '../services/categoria.service';
-import { MOCK_CATEGORIAS } from '../mocks/mockData';
 
 function Categorias() {
   const { user, logout } = useAuth();
@@ -22,11 +21,11 @@ function Categorias() {
 
   const loadCategorias = async () => {
     try {
-      // TODO: Cuando el backend esté listo
-      // const data = await CategoriaService.getAll();
-      setCategorias(MOCK_CATEGORIAS);
+      const data = await CategoriaService.getAll();
+      setCategorias(data);
     } catch (error) {
       console.error('Error al cargar categorías:', error);
+      alert('Error al cargar categorías: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -36,20 +35,28 @@ function Categorias() {
     e.preventDefault();
     
     try {
+      // Verificar que hay token antes de enviar
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('No estás autenticado. Por favor, inicia sesión nuevamente.');
+        navigate('/');
+        return;
+      }
+
       if (editingCategoria) {
-        // TODO: await CategoriaService.update(editingCategoria.id, formData);
-        console.log('Actualizando categoría:', formData);
+        await CategoriaService.update(editingCategoria.id, formData);
+        alert('Categoría actualizada exitosamente');
       } else {
-        // TODO: await CategoriaService.create(formData);
-        console.log('Creando categoría:', formData);
+        await CategoriaService.create(formData);
+        alert('Categoría creada exitosamente');
       }
       
       setShowModal(false);
       resetForm();
-      loadCategorias();
-      alert('Categoría guardada exitosamente');
+      await loadCategorias();
     } catch (error) {
-      alert('Error al guardar categoría: ' + error.message);
+      console.error('Error al guardar categoría:', error);
+      alert('Error al guardar categoría: ' + (error.message || 'Error desconocido'));
     }
   };
 
@@ -66,12 +73,12 @@ function Categorias() {
     if (!confirm('¿Estás seguro de eliminar esta categoría?')) return;
     
     try {
-      // TODO: await CategoriaService.delete(id);
-      console.log('Eliminando categoría:', id);
-      loadCategorias();
-      alert('Categoría eliminada');
+      await CategoriaService.delete(id);
+      alert('Categoría eliminada exitosamente');
+      await loadCategorias();
     } catch (error) {
-      alert('Error al eliminar categoría: ' + error.message);
+      console.error('Error al eliminar categoría:', error);
+      alert('Error al eliminar categoría: ' + (error.message || 'Error desconocido'));
     }
   };
 

@@ -85,16 +85,6 @@ function Login() {
         <div className="register-link">
           <p>¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link></p>
         </div>
-
-        <div className="demo-credentials">
-          <p className="info-title">👤 Usuarios de prueba (MOCK):</p>
-          <ul>
-            <li><strong>Admin:</strong> admin / admin123</li>
-            <li><strong>Vendedor:</strong> vendedor / vendedor123</li>
-            <li><strong>Cliente:</strong> cliente / cliente123</li>
-          </ul>
-          <p className="info-note">* Cuando el backend esté listo, usar credenciales reales</p>
-        </div>
       </div>
     </div>
   )
