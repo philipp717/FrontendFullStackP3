@@ -35,14 +35,6 @@ function Categorias() {
     e.preventDefault();
     
     try {
-      // Verificar que hay token antes de enviar
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('No estás autenticado. Por favor, inicia sesión nuevamente.');
-        navigate('/');
-        return;
-      }
-
       if (editingCategoria) {
         await CategoriaService.update(editingCategoria.id, formData);
         alert('Categoría actualizada exitosamente');
@@ -56,7 +48,12 @@ function Categorias() {
       await loadCategorias();
     } catch (error) {
       console.error('Error al guardar categoría:', error);
-      alert('Error al guardar categoría: ' + (error.message || 'Error desconocido'));
+      // Si es error de autenticación, el interceptor ya manejará el redirect
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      } else {
+        alert('Error al guardar categoría: ' + (error.message || 'Error desconocido'));
+      }
     }
   };
 

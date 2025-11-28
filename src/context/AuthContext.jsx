@@ -8,10 +8,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar si hay un usuario guardado al cargar la aplicación
+    // Verificar si hay un usuario y token válidos al cargar la aplicación
+    const token = AuthService.getToken();
     const currentUser = AuthService.getCurrentUser();
-    if (currentUser) {
+    
+    // Solo restaurar el usuario si hay token Y usuario
+    if (token && currentUser) {
       setUser(currentUser);
+    } else {
+      // Si falta alguno, limpiar todo
+      AuthService.logout();
+      setUser(null);
     }
     setLoading(false);
   }, []);
@@ -25,6 +32,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     AuthService.logout();
     setUser(null);
+    // Forzar recarga para limpiar cualquier estado en memoria
+    window.location.href = '/';
   };
 
   const isAuthenticated = () => {

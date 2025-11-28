@@ -1,16 +1,48 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ProductoService from '../services/producto.service';
+import BoletaService from '../services/boleta.service';
+import UsuarioService from '../services/usuario.service';
+import CategoriaService from '../services/categoria.service';
 
 function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    totalProductos: 8,
-    totalBoletas: 2,
-    totalUsuarios: 3,
-    ventasHoy: '$85.000'
+    totalProductos: 0,
+    totalBoletas: 0,
+    totalUsuarios: 0,
+    totalCategorias: 0
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      // Cargar datos en paralelo
+      const [productos, boletas, usuarios, categorias] = await Promise.all([
+        ProductoService.getAll().catch(() => []),
+        BoletaService.getAll().catch(() => []),
+        user?.role === 'ADMIN' ? UsuarioService.getAll().catch(() => []) : Promise.resolve([]),
+        CategoriaService.getAll().catch(() => [])
+      ]);
+
+      setStats({
+        totalProductos: productos.length || 0,
+        totalBoletas: boletas.length || 0,
+        totalUsuarios: usuarios.length || 0,
+        totalCategorias: categorias.length || 0
+      });
+    } catch (error) {
+      console.error('Error al cargar estadísticas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -36,7 +68,7 @@ function Dashboard() {
     },
     {
       title: 'Categorías',
-      count: 4,
+      count: stats.totalCategorias,
       icon: '🏷️',
       color: '#FFD700',
       path: '/categorias',
@@ -103,30 +135,43 @@ function Dashboard() {
       {/* Main Content */}
       <main className="dashboard-main">
         <header className="dashboard-header">
-          <h1>Panel Administrativo - Inicio de Sesión</h1>
-          <p>Bienvenido/a, {user?.nombre}</p>
+          <div>
+            <h1>Panel Administrativo - Inicio de Sesión</h1>
+            <p>Bienvenido/a, {user?.nombre}</p>
+          </div>
+          <button 
+            onClick={loadStats} 
+            className="btn-refresh"
+            disabled={loading}
+          >
+            🔄 {loading ? 'Actualizando...' : 'Actualizar'}
+          </button>
         </header>
 
         {/* Stats Cards */}
-        <div className="stats-grid">
-          {visibleItems.map((item, index) => (
-            <div 
-              key={index} 
-              className="stat-card" 
-              style={{ borderColor: item.color }}
-              onClick={() => navigate(item.path)}
-            >
-              <div className="stat-icon" style={{ backgroundColor: item.color }}>
-                {item.icon}
+        {loading ? (
+          <div className="loading">Cargando estadísticas...</div>
+        ) : (
+          <div className="stats-grid">
+            {visibleItems.map((item, index) => (
+              <div 
+                key={index} 
+                className="stat-card" 
+                style={{ borderColor: item.color }}
+                onClick={() => navigate(item.path)}
+              >
+                <div className="stat-icon" style={{ backgroundColor: item.color }}>
+                  {item.icon}
+                </div>
+                <div className="stat-content">
+                  <h3>{item.title}</h3>
+                  {item.count !== undefined && <p className="stat-count">{item.count}</p>}
+                  <p className="stat-link">Ver detalles →</p>
+                </div>
               </div>
-              <div className="stat-content">
-                <h3>{item.title}</h3>
-                {item.count && <p className="stat-count">{item.count}</p>}
-                <p className="stat-link">Ver detalles →</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="quick-actions">
@@ -155,23 +200,6 @@ function Dashboard() {
               <span>Ver Boletas</span>
             </button>
           </div>
-        </div>
-
-        {/* Info Notice */}
-        <div className="info-notice">
-          <h3>ℹ️ Información del Sistema</h3>
-          <p>
-            <strong>Nota:</strong> Al entrar como administrador redireccionará al dashboard del administrador, 
-            donde mostrará un pequeño reporte y acceso directo. Ruta <code>www.tiendaonline.test/admin</code>
-          </p>
-          <p>
-            <strong>Roles disponibles:</strong>
-          </p>
-          <ul>
-            <li><strong>ADMIN:</strong> Acceso total al sistema (productos, categorías, usuarios, boletas)</li>
-            <li><strong>VENDEDOR:</strong> Ver productos y boletas (solo lectura)</li>
-            <li><strong>CLIENTE:</strong> Acceso solo a la tienda</li>
-          </ul>
         </div>
       </main>
     </div>

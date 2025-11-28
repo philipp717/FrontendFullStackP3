@@ -83,13 +83,6 @@ npm run build
 - Acceso a la tienda
 - **Credenciales de prueba:** `vendedor` / `vendedor123`
 
-### 🟢 CLIENTE
-- **Solo acceso a la tienda**
-- Catálogo de productos
-- Carrito de compras
-- Generación de boletas
-- **Credenciales de prueba:** `cliente` / `cliente123`
-
 ## 📂 Estructura del Proyecto
 
 ```

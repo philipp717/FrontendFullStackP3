@@ -385,6 +385,33 @@ body {
   margin-top: 5px;
 }
 
+.btn-refresh {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-refresh:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-refresh:disabled {
+  background: var(--gray);
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* ===== STATS CARDS ===== */
 .stats-grid {
   display: grid;

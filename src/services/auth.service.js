@@ -43,16 +43,33 @@ const AuthService = {
         password: credentials.password
       };
       
+      console.log('🔐 Intentando login con:', loginData.usernameOrEmail);
+      
       const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, loginData);
+      
+      console.log('📥 Respuesta del login:', response.data);
       
       // Guardar token y datos del usuario
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('✅ Token guardado en localStorage:', response.data.token.substring(0, 20) + '...');
+      } else if (response.data.access_token) {
+        // Si el backend retorna access_token en lugar de token
+        localStorage.setItem('token', response.data.access_token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('✅ Token guardado en localStorage (access_token):', response.data.access_token.substring(0, 20) + '...');
+      } else {
+        console.error('❌ El backend no retornó un token');
+        console.error('Estructura de respuesta:', Object.keys(response.data));
+        throw { message: 'El servidor no retornó un token de autenticación' };
       }
       
       return response.data;
     } catch (error) {
+      console.error('❌ Error en login:', error);
+      console.error('Detalles del error:', error.response?.data);
+      console.error('Status:', error.response?.status);
       throw error.response?.data || { message: 'Error al iniciar sesión' };
     }
   },
@@ -72,17 +89,33 @@ const AuthService = {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('cart');
+    // Limpiar cualquier otro dato relacionado con la sesión
+    sessionStorage.clear();
   },
 
   // Obtener usuario actual
   getCurrentUser() {
+    const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
+    
+    // Si no hay token, no hay usuario válido
+    if (!token) {
+      return null;
+    }
+    
     return userStr ? JSON.parse(userStr) : null;
   },
 
   // Verificar si está autenticado
   isAuthenticated() {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const user = this.getCurrentUser();
+    return !!(token && user);
+  },
+
+  // Obtener el token actual
+  getToken() {
+    return localStorage.getItem('token');
   },
 
   // Verificar rol del usuario
