@@ -54,18 +54,18 @@ const AuthService = {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('✅ Token guardado en localStorage:', response.data.token.substring(0, 20) + '...');
+        return { token: response.data.token, user: response.data.user };
       } else if (response.data.access_token) {
         // Si el backend retorna access_token en lugar de token
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('✅ Token guardado en localStorage (access_token):', response.data.access_token.substring(0, 20) + '...');
+        return { token: response.data.access_token, user: response.data.user };
       } else {
         console.error('❌ El backend no retornó un token');
         console.error('Estructura de respuesta:', Object.keys(response.data));
         throw { message: 'El servidor no retornó un token de autenticación' };
       }
-      
-      return response.data;
     } catch (error) {
       console.error('❌ Error en login:', error);
       console.error('Detalles del error:', error.response?.data);

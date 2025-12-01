@@ -98,6 +98,7 @@ describe('AuthService', () => {
   describe('getCurrentUser', () => {
     it('retorna el usuario parseado desde localStorage', () => {
       const user = { id: 1, username: 'test', role: 'ADMIN' };
+      localStorage.setItem('token', 'test-token');
       localStorage.setItem('user', JSON.stringify(user));
 
       expect(AuthService.getCurrentUser()).toEqual(user);

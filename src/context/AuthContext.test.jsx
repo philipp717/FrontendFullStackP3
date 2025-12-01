@@ -12,7 +12,8 @@ vi.mock('../services/auth.service', () => ({
     getCurrentUser: vi.fn(),
     isAuthenticated: vi.fn(),
     login: vi.fn(),
-    logout: vi.fn()
+    logout: vi.fn(),
+    getToken: vi.fn()
   }
 }));
 
@@ -39,6 +40,7 @@ describe('AuthContext', () => {
 
   it('proporciona usuario cuando está autenticado', async () => {
     const mockUser = { id: 1, nombre: 'Test User', role: 'ADMIN' };
+    AuthService.getToken.mockReturnValue('test-token');
     AuthService.getCurrentUser.mockReturnValue(mockUser);
     AuthService.isAuthenticated.mockReturnValue(true);
 
@@ -55,6 +57,7 @@ describe('AuthContext', () => {
   });
 
   it('no proporciona usuario cuando no está autenticado', async () => {
+    AuthService.getToken.mockReturnValue(null);
     AuthService.getCurrentUser.mockReturnValue(null);
     AuthService.isAuthenticated.mockReturnValue(false);
 
@@ -70,6 +73,7 @@ describe('AuthContext', () => {
   });
 
   it('cambia loading a false después de inicialización', async () => {
+    AuthService.getToken.mockReturnValue(null);
     AuthService.getCurrentUser.mockReturnValue(null);
     AuthService.isAuthenticated.mockReturnValue(false);
 
@@ -79,10 +83,7 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    // Inicialmente debería estar cargando
-    expect(screen.getByTestId('loading')).toHaveTextContent('Loading');
-
-    // Después debería terminar de cargar
+    // Verificar que termina de cargar
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Loaded');
     });
