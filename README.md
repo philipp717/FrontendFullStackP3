@@ -1,314 +1,364 @@
-# 🎴 Tienda de Cartas Pokémon - Frontend (Evaluación Parcial 3)
+# Frontend FullStack P3 - Tienda de Cartas Pokémon
 
-**Aplicación web React para la venta de cartas Pokémon originales - DSY1104 Desarrollo Fullstack II**
+Aplicación web React + Vite para una tienda de cartas Pokémon. Incluye sistema de autenticación JWT, gestión de productos, categorías, usuarios, carrito de compras y generación de boletas.
 
-## 📋 Descripción del Proyecto
+## Requisitos Previos
 
-Frontend desarrollado con React + Vite que se integra con un backend Spring Boot para la gestión completa de una tienda online de cartas Pokémon. Implementa autenticación JWT, gestión de sesiones, roles de usuario y operaciones CRUD completas.
+Antes de comenzar, asegúrate de tener instalado:
 
-### 🎯 Características Principales
+- [Node.js](https://nodejs.org/) (versión 16 o superior recomendada)
+- npm (incluido con Node.js)
+- Git
+- **Backend corriendo** - [BackendFullStackP3](https://github.com/NicolasGarridoB/BackendFullStackP3)
 
-- ✅ **Autenticación JWT** con roles (ADMIN, VENDEDOR, CLIENTE)
-- ✅ **Gestión de sesión persistente** (mantiene sesión incluso con F5)
-- ✅ **Restricciones de acceso por rol**
-- ✅ **Dashboard administrativo** con estadísticas
-- ✅ **Tienda online** con carrito de compras
-- ✅ **CRUD completo** de productos, usuarios, categorías y boletas
-- ✅ **Generación de boletas** con IVA 19% (formato chileno)
-- ✅ **Diseño responsive** con tema Pokémon profesional
-- ✅ **Integración con API REST** (Spring Boot backend)
+## Instalación y Configuración
 
-## 🚀 Instalación y Ejecución
+### 1. Clonar el Repositorio
 
-### Requisitos Previos
-- Node.js (versión 16 o superior)
-- npm o yarn
-- Backend Spring Boot corriendo (opcional para desarrollo)
-
-### Paso 1: Instalar dependencias
-
-```powershell
-npm install
+```bash
+git clone https://github.com/philipp717/FrontendFullStackP3.git
+cd FrontendFullStackP3
 ```
 
-### Paso 2: Configurar la URL del Backend
+### 2. Instalar Dependencias
 
-Edita el archivo `src/config/api.config.js` y cambia la URL base:
+```bash
+npm i
+```
+
+### 3. Configurar Conexión al Backend
+
+Edita el archivo `src/config/api.config.js` para apuntar a tu backend:
 
 ```javascript
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:8080/api', // Cambiar según tu backend
-  // ...
+  BASE_URL: 'http://localhost:3000/api/v1',  // URL del backend NestJS
+  TIMEOUT: 10000,
 };
 ```
 
-### Paso 3: Modo Mock vs Backend Real
+> **Importante:** Asegúrate de que el backend esté corriendo en `http://localhost:3000` antes de iniciar el frontend.
 
-En `src/services/auth.service.js` hay una variable `USE_MOCK`:
+### 4. Iniciar el Servidor de Desarrollo
 
-```javascript
-const USE_MOCK = true; // true = datos mock, false = backend real
-```
-
-- **`true`**: Usa datos de prueba locales (para desarrollo sin backend)
-- **`false`**: Conecta con el backend Spring Boot real
-
-### Paso 4: Ejecutar el servidor de desarrollo
-
-```powershell
+```bash
 npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:5173`
+El servidor se iniciará y verás en la consola:
 
-### Paso 5: Construir para producción (opcional)
+```
+VITE v5.4.21  ready in xxx ms
 
-```powershell
-npm run build
+➜  Local:   http://localhost:5173/
+➜  Network: use --host to expose
 ```
 
-## � Roles y Permisos
+### 5. Acceder a la Aplicación
 
-### 🔴 ADMINISTRADOR
+Abre tu navegador y ve a: **http://localhost:5173**
+
+### 6. Iniciar Sesión
+
+Usa las credenciales creadas por el seed del backend:
+
+- **Usuario:** `admin`
+- **Contraseña:** `admin123`
+
+> **Nota:** Debes haber ejecutado el seed del backend (`POST /api/v1/seed`) para que estos usuarios existan.
+
+## Roles y Permisos
+
+### 🔴 ADMINISTRADOR (ADMIN)
 - **Acceso total** al sistema
-- Dashboard administrativo completo
-- CRUD de productos, categorías, usuarios y boletas
-- Ver todas las estadísticas
-- **Credenciales de prueba:** `admin` / `admin123`
+- Dashboard con todas las estadísticas
+- CRUD completo de productos, categorías, usuarios y boletas
+- Acceso a la tienda como cliente
+- **Credenciales:** `admin` / `admin123`
 
-### 🟡 VENDEDOR
-- Dashboard con vista limitada
-- **Solo lectura** de productos y boletas
+### 🟡 VENDEDOR (VENDEDOR)
+- Dashboard con vista de productos y boletas (solo lectura)
 - No puede crear, editar ni eliminar
-- Acceso a la tienda
-- **Credenciales de prueba:** `vendedor` / `vendedor123`
+- Acceso a la tienda como cliente
+- **Credenciales:** Crear desde el panel de usuarios como admin
+
+### 🟢 CLIENTE (CLIENTE)
+- Solo acceso a la tienda
+- Carrito de compras y checkout
+- Ver facturas de sus compras
+- **Credenciales:** Registrarse desde `/register`
 
 ## 📂 Estructura del Proyecto
 
 ```
 FrontendFullStackP3/
+
+## Estructura del Proyecto
+
+```
+FrontendFullStackP3/
 ├── src/
-│   ├── components/          # Componentes React
+│   ├── components/
+│   │   ├── atoms/           # Componentes básicos (Button, Input, Badge, LoadingSpinner)
+│   │   ├── molecules/       # Componentes compuestos (Card, FormField, Modal, StatCard)
+│   │   ├── organisms/       # Componentes complejos (Sidebar, Header, DataTable)
+│   │   ├── templates/       # Layouts reutilizables (AdminLayout)
+│   │   ├── pages/           # Páginas completas
+│   │   │   ├── Dashboard.jsx      # Panel administrativo
+│   │   │   ├── Productos.jsx      # CRUD de productos (ADMIN)
+│   │   │   ├── Categorias.jsx     # CRUD de categorías (ADMIN)
+│   │   │   ├── Boletas.jsx        # Gestión de boletas (ADMIN/VENDEDOR)
+│   │   │   ├── Tienda.jsx         # Catálogo y carrito
+│   │   │   ├── Checkout.jsx       # Proceso de compra
+│   │   │   └── Invoice.jsx        # Generador de boleta
 │   │   ├── Login.jsx        # Página de inicio de sesión
-│   │   ├── Dashboard.jsx    # Panel administrativo
-│   │   ├── Tienda.jsx       # Catálogo y carrito
-│   │   ├── Productos.jsx    # CRUD de productos (ADMIN)
-│   │   ├── Boletas.jsx      # Gestión de órdenes (ADMIN/VENDEDOR)
-│   │   ├── Usuarios.jsx     # CRUD de usuarios (ADMIN)
-│   │   ├── Categorias.jsx   # CRUD de categorías (ADMIN)
-│   │   └── Invoice.jsx      # Generador de boleta
+│   │   ├── Register.jsx     # Registro de usuarios
+│   │   └── Usuarios.jsx     # CRUD de usuarios (ADMIN)
 │   ├── context/             # Context API
-│   │   └── AuthContext.jsx  # Contexto de autenticación
+│   │   └── AuthContext.jsx  # Contexto de autenticación global
 │   ├── services/            # Servicios API
-│   │   ├── api.service.js   # Cliente HTTP (axios + interceptores)
-│   │   ├── auth.service.js  # Servicios de autenticación
+│   │   ├── api.service.js   # Cliente HTTP (axios + interceptores JWT)
+│   │   ├── auth.service.js  # Autenticación con refresh token
 │   │   ├── producto.service.js
 │   │   ├── boleta.service.js
 │   │   ├── usuario.service.js
 │   │   └── categoria.service.js
 │   ├── config/              # Configuración
-│   │   └── api.config.js    # URLs y endpoints
-│   ├── mocks/               # Datos de prueba (TEMPORAL)
-│   │   └── mockData.js      # Datos mock para desarrollo
-│   ├── App.jsx              # Configuración de rutas
-│   ├── main.jsx             # Punto de entrada
-│   └── styles.css           # Estilos globales
+│   │   └── api.config.js    # URLs base del backend
+│   ├── App.jsx              # Configuración de rutas (React Router)
+│   ├── main.jsx             # Punto de entrada de la aplicación
+│   └── styles.css           # Estilos globales (CSS puro)
 ├── index.html               # HTML base
 ├── vite.config.js           # Configuración de Vite
-├── package.json             # Dependencias
+├── package.json             # Dependencias del proyecto
+├── ATOMIC_DESIGN.md         # Documentación de la arquitectura
 └── README.md                # Este archivo
 ```
 
-## 🛠️ Tecnologías Utilizadas
+## Arquitectura del Proyecto
 
-| Tecnología | Versión | Propósito |
-|-----------|---------|-----------|
-| **React** | 18.2.0 | Librería de UI |
-| **Vite** | 5.1.7 | Build tool y dev server |
-| **React Router DOM** | 6.14.1 | Navegación SPA |
-| **Axios** | 1.x | Cliente HTTP para API REST |
-| **CSS3** | - | Estilos y diseño responsive |
-| **LocalStorage** | - | Persistencia de sesión/carrito |
+Este proyecto implementa **Atomic Design** para máxima reutilización:
 
-## 🔗 Integración con Backend
+- **Atoms**: Componentes básicos (Button, Input, Badge)
+- **Molecules**: Combinaciones simples (Card, FormField, Modal)
+- **Organisms**: Componentes complejos (Sidebar, Header, DataTable)
+- **Templates**: Layouts reutilizables (AdminLayout)
+- **Pages**: Páginas completas que usan todos los anteriores
 
-### Endpoints Esperados
+> Ver `ATOMIC_DESIGN.md` para documentación completa de la arquitectura.
 
-El frontend espera que el backend tenga los siguientes endpoints:
+## Tecnologías Utilizadas
 
-#### Autenticación
-- `POST /api/auth/login` - Iniciar sesión
-- `POST /api/auth/register` - Registrar usuario
+- **React 18.2.0** - Librería de UI
+- **Vite 5.4.21** - Build tool y dev server ultra-rápido
+- **React Router DOM 6.14.1** - Navegación SPA
+- **Axios 1.x** - Cliente HTTP con interceptores
+- **PropTypes** - Validación de props en componentes
+- **Vitest + React Testing Library** - Testing unitario (>80% coverage)
+- **CSS3** - Estilos puros sin frameworks
+- **LocalStorage** - Persistencia de sesión y carrito
 
-#### Productos
-- `GET /api/productos` - Listar productos
-- `POST /api/productos` - Crear producto (ADMIN)
-- `PUT /api/productos/{id}` - Actualizar producto (ADMIN)
-- `DELETE /api/productos/{id}` - Eliminar producto (ADMIN)
+## Integración con Backend
 
-#### Boletas
-- `GET /api/boletas` - Listar boletas
-- `POST /api/boletas` - Crear boleta
-- `GET /api/boletas/{id}` - Detalle de boleta
+### URL Base del Backend
 
-#### Usuarios (ADMIN)
-- `GET /api/usuarios` - Listar usuarios
-- `POST /api/usuarios` - Crear usuario
-- `PUT /api/usuarios/{id}` - Actualizar usuario
-- `DELETE /api/usuarios/{id}` - Eliminar usuario
+El frontend se conecta al backend NestJS en:
 
-#### Categorías (ADMIN)
-- `GET /api/categorias` - Listar categorías
-- `POST /api/categorias` - Crear categoría
-- `PUT /api/categorias/{id}` - Actualizar categoría
-- `DELETE /api/categorias/{id}` - Eliminar categoría
-
-### Formato de Respuesta Esperado
-
-#### Login exitoso
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "username": "admin",
-    "nombre": "Administrador",
-    "email": "admin@pokemon.com",
-    "role": "ADMIN"
-  }
-}
+```javascript
+// src/config/api.config.js
+export const API_CONFIG = {
+  BASE_URL: 'http://localhost:3000/api/v1',
+};
 ```
 
-## 📱 Uso de la Aplicación
+### Endpoints Utilizados
+
+#### Autenticación
+- `POST /auth/login` - Iniciar sesión
+- `POST /auth/register` - Registrar usuario cliente
+- `POST /auth/refresh` - Refrescar token JWT
+
+#### Productos
+- `GET /productos` - Listar productos
+- `POST /productos` - Crear producto (ADMIN)
+- `PATCH /productos/{id}` - Actualizar producto (ADMIN)
+- `DELETE /productos/{id}` - Eliminar producto (ADMIN)
+
+#### Boletas
+- `GET /boletas` - Listar boletas
+- `POST /boletas` - Crear boleta
+- `GET /boletas/{id}` - Detalle de boleta
+
+#### Usuarios (ADMIN)
+- `GET /users` - Listar usuarios
+- `POST /users` - Crear usuario
+- `PATCH /users/{id}` - Actualizar usuario
+- `DELETE /users/{id}` - Eliminar usuario
+
+#### Categorías (ADMIN)
+- `GET /categorias` - Listar categorías
+- `POST /categorias` - Crear categoría
+- `PATCH /categorias/{id}` - Actualizar categoría
+- `DELETE /categorias/{id}` - Eliminar categoría
+
+### Autenticación JWT
+
+El frontend incluye:
+
+- **Interceptor de solicitudes**: Añade automáticamente el token JWT a todas las peticiones
+- **Interceptor de respuestas**: Maneja errores 401 con refresh token automático
+- **Retry automático**: Si el token expira, lo refresca y reintenta la petición original
+- **Detección de expiración**: Valida si el token expirará en menos de 5 minutos
+
+## Uso de la Aplicación
 
 ### 1. Inicio de Sesión
-- Ingresar con uno de los usuarios de prueba
+- Ingresa en **http://localhost:5173**
+- Usa credenciales del seed del backend: `admin` / `admin123`
 - El sistema redirige según el rol:
   - **ADMIN/VENDEDOR** → Dashboard
   - **CLIENTE** → Tienda
 
 ### 2. Dashboard (ADMIN/VENDEDOR)
-- Ver estadísticas del sistema
-- Acceso rápido a módulos
-- Navegación por sidebar
+- Ver estadísticas en tiempo real (total productos, usuarios, boletas, ingresos)
+- Navegación por sidebar con íconos
+- Acceso rápido a todos los módulos
 
-### 3. Tienda (Todos los usuarios)
-- Navegar por categorías
+### 3. Gestión de Productos (ADMIN)
+- Ver listado de productos en tabla
+- Crear nuevo producto con imagen, precio, stock, categoría
+- Editar productos existentes
+- Eliminar productos (con confirmación)
+
+### 4. Tienda (Todos los usuarios)
+- Explorar catálogo de cartas Pokémon
+- Filtrar por categorías
 - Agregar productos al carrito
-- Ajustar cantidades
+- Ver carrito lateral con cantidades
 - Proceder al checkout
 
-### 4. Gestión de Productos (ADMIN)
-- Crear nuevos productos
-- Editar información
-- Eliminar productos
-- Asignar categorías
+### 5. Checkout y Boletas
+- Revisar productos del carrito
+- Generar boleta con IVA 19%
+- Ver boleta generada en formato PDF
+- Historial de compras en sección Boletas
 
-### 5. Gestión de Boletas (ADMIN/VENDEDOR)
-- Ver lista de órdenes
-- Consultar detalles de cada boleta
-- **VENDEDOR:** Solo lectura
+## Testing
 
-### 6. Gestión de Usuarios (ADMIN)
-- Crear usuarios con roles
-- Editar información
-- Eliminar usuarios
+Este proyecto incluye tests unitarios con **Vitest** y **React Testing Library**.
 
-### 7. Boleta
-- Revisar resumen de compra
-- Ver subtotal, IVA (19%) y total
-- Imprimir boleta
-- Realizar nueva compra
+### Ejecutar Tests
 
-## 🎨 Personalización
-
-### Cambiar Colores del Tema
-
-Edita las variables CSS en `src/styles.css`:
-
-```css
-:root {
-  --primary: #3B4CCA;        /* Azul Pokémon */
-  --secondary: #FFCB05;      /* Amarillo Pokémon */
-  --success: #4CAF50;        /* Verde */
-  --danger: #f44336;         /* Rojo */
-  /* ... */
-}
+```bash
+npm run test
 ```
 
-### Agregar Nuevas Rutas
+### Cobertura de Tests
 
-En `src/App.jsx`:
+El proyecto tiene >80% de cobertura en:
 
-```jsx
-<Route 
-  path="/nueva-ruta" 
-  element={
-    <ProtectedRoute roles={['ADMIN']}>
-      <NuevoComponente />
-    </ProtectedRoute>
-  } 
-/>
+- ✅ Componentes atómicos (Button, Input, Badge, LoadingSpinner)
+- ✅ Componentes moleculares (Card, FormField, Modal, StatCard)
+- ✅ Servicios (auth.service.js)
+- ✅ Context (AuthContext.jsx)
+
+Los tests se encuentran en archivos `.test.jsx` o `.test.js` junto a sus componentes.
+
+## Scripts Disponibles
+
+```bash
+# Desarrollo con hot-reload
+npm run dev
+
+# Compilar el proyecto para producción
+npm run build
+
+# Preview del build de producción
+npm run preview
+
+# Ejecutar tests unitarios
+npm run test
+
+# Ejecutar tests con cobertura
+npm run test:coverage
 ```
 
-## 📋 Modelo de Base de Datos
+## Seguridad
 
-El backend debe implementar las siguientes tablas:
+- Las contraseñas no se almacenan en el frontend
+- Tokens JWT se guardan en **localStorage**
+- Interceptores de axios añaden el token automáticamente a todas las peticiones
+- **Refresh token** automático cuando el token principal expira
+- **Retry automático** de peticiones fallidas por token expirado
+- Validación de roles en rutas protegidas (ProtectedRoute)
+- Guards para prevenir acceso no autorizado según rol
 
-1. **USUARIO** - Usuarios del sistema
-2. **BOLETA** - Órdenes de compra
-3. **DETALLE_BOLETA** - Items de cada boleta
-4. **PRODUCTO** - Cartas Pokémon
-5. **CATEGORIA** - Clasificación de productos
-
-## 📝 Notas Importantes
-
-### Modo Mock (Desarrollo)
-- El frontend incluye datos de prueba para desarrollo
-- Permite trabajar sin backend
-- Cambiar `USE_MOCK = false` cuando el backend esté listo
-
-### Seguridad
-- Los tokens JWT se almacenan en localStorage
-- Los interceptores de axios agregan el token automáticamente
-- Si el token expira (401), redirige al login
-
-### IVA Chileno
-- Todas las boletas calculan IVA del 19%
-- Formato de precios en pesos chilenos (CLP)
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Error: "Cannot connect to backend"
-- Verificar que el backend esté corriendo
-- Revisar la URL en `src/config/api.config.js`
-- Activar modo mock temporalmente
+1. Verifica que el backend esté corriendo en `http://localhost:3000`
+2. Revisa que hayas ejecutado el seed del backend
+3. Confirma la URL en `src/config/api.config.js`
 
 ### Error: "CORS policy"
-- Configurar CORS en el backend Spring Boot
-- Permitir origen `http://localhost:5173`
-
-### La sesión no persiste
-- Verificar que localStorage no esté bloqueado
-- Revisar la consola del navegador
-
-## 📦 Scripts Disponibles
-
-```powershell
-npm run dev          # Iniciar servidor de desarrollo
-npm run build        # Construir para producción
-npm run preview      # Preview del build de producción
-npm run lint         # Revisar código (si ESLint está configurado)
+El backend debe tener CORS configurado para permitir:
+```javascript
+origin: 'http://localhost:5173'
 ```
 
-## 🚀 Despliegue
+### La sesión no persiste al recargar
+- Verifica que localStorage no esté bloqueado en tu navegador
+- Revisa la consola del navegador para ver errores de token
 
-### Build de Producción
-```powershell
-npm run build
-```
+### No aparecen productos/usuarios
+- Ejecuta el seed del backend: `POST http://localhost:3000/api/v1/seed`
+- Verifica que la base de datos `test` exista en MySQL
 
-Los archivos optimizados estarán en la carpeta `dist/`
+## Complemento con el Backend
+
+Este frontend está diseñado para trabajar con el backend NestJS:
+
+**Backend:** [BackendFullStackP3](https://github.com/NicolasGarridoB/BackendFullStackP3)
+
+### Flujo de Trabajo Completo
+
+1. **Inicia el backend** (puerto 3000)
+   - Ejecuta XAMPP (MySQL en puerto 3307)
+   - Corre el seed para crear datos iniciales
+
+2. **Inicia el frontend** (puerto 5173)
+   - El frontend se conecta automáticamente al backend
+   - Los tokens JWT se manejan automáticamente
+
+3. **Desarrollo**
+   - Cambios en frontend se reflejan con hot-reload
+   - Cambios en backend requieren reiniciar el servidor NestJS
+
+## Características Técnicas Destacadas
+
+### Atomic Design Pattern
+- Componentes organizados en 5 niveles jerárquicos
+- Máxima reutilización y mantenibilidad
+- Ver `ATOMIC_DESIGN.md` para documentación completa
+
+### JWT con Refresh Token
+- Token principal válido por 1 día
+- Refresh automático antes de expiración
+- Retry de peticiones fallidas sin interrumpir al usuario
+
+### Interceptores de Axios
+- **Request:** Añade token JWT a todas las peticiones
+- **Response:** Maneja errores 401 con refresh token automático
+- **Error handling:** Mensajes de error centralizados
+
+### Validación de Props
+- Todos los componentes atómicos usan PropTypes
+- Validación en tiempo de desarrollo
+- Prevención de errores por tipos incorrectos
+
+---
+
+**Desarrollado para DSY1104 - Desarrollo Fullstack II**
 
 ### Variables de Entorno (Opcional)
 Crear archivo `.env`:
