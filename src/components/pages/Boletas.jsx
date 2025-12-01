@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import BoletaService from '../services/boleta.service';
+import { useAuth } from '../../context/AuthContext';
+import BoletaService from '../../services/boleta.service';
 
 function Boletas() {
   const { user, logout } = useAuth();

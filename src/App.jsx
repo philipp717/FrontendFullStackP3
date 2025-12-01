@@ -2,13 +2,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
-import Tienda from './components/Tienda';
-import Productos from './components/Productos';
-import Boletas from './components/Boletas';
-import Categorias from './components/Categorias';
-import Checkout from './components/Checkout';
-import Invoice from './components/Invoice';
+import Dashboard from './components/pages/Dashboard';
+import Tienda from './components/pages/Tienda';
+import Productos from './components/pages/Productos';
+import Boletas from './components/pages/Boletas';
+import Categorias from './components/pages/Categorias';
+import Checkout from './components/pages/Checkout';
+import Invoice from './components/pages/Invoice';
 
 // Componente para proteger rutas
 function ProtectedRoute({ children, roles }) {

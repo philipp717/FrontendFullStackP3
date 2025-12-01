@@ -118,6 +118,51 @@ const AuthService = {
     return localStorage.getItem('token');
   },
 
+  // Refresh token - renovar token antes de que expire
+  async refreshToken() {
+    try {
+      const currentToken = this.getToken();
+      if (!currentToken) {
+        throw { message: 'No hay token para renovar' };
+      }
+
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH);
+      
+      if (response.data.access_token) {
+        localStorage.setItem('token', response.data.access_token);
+        console.log('✅ Token renovado exitosamente');
+        return response.data.access_token;
+      }
+      
+      return currentToken;
+    } catch (error) {
+      console.error('❌ Error al renovar token:', error);
+      // Si falla el refresh, limpiar sesión
+      this.logout();
+      throw error.response?.data || { message: 'Error al renovar token' };
+    }
+  },
+
+  // Validar si el token está por expirar (útil para refresh automático)
+  isTokenExpiringSoon() {
+    try {
+      const token = this.getToken();
+      if (!token) return true;
+
+      // Decodificar el JWT (solo la parte del payload)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000; // Convertir a milisegundos
+      const now = Date.now();
+      const timeUntilExpiry = exp - now;
+      
+      // Si faltan menos de 5 minutos para expirar
+      return timeUntilExpiry < 5 * 60 * 1000;
+    } catch (error) {
+      console.error('Error al validar expiración del token:', error);
+      return true; // Asumir que expira si hay error
+    }
+  },
+
   // Verificar rol del usuario
   hasRole(role) {
     const user = this.getCurrentUser();

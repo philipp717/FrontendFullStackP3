@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import ProductoService from '../services/producto.service';
+import { useAuth } from '../../context/AuthContext';
+import ProductoService from '../../services/producto.service';
 
 function Tienda() {
   const { user, logout } = useAuth();

@@ -33,25 +33,54 @@ apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    // Si el token expiró (401) o no tiene permisos (403), limpiar y redirigir
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.error('🚫 Error de autenticación:', error.response.status, error.response.data);
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Si el error es 401 y no hemos intentado refresh aún
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Intentar renovar el token
+        const AuthService = await import('./auth.service').then(m => m.default);
+        const newToken = await AuthService.refreshToken();
+        
+        // Actualizar el header con el nuevo token
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        
+        // Reintentar la request original
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        // Si falla el refresh, limpiar y redirigir
+        console.error('🚫 Error al renovar token, cerrando sesión');
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('cart');
+        sessionStorage.clear();
+        
+        if (window.location.pathname !== '/' && window.location.pathname !== '/register') {
+          window.location.href = '/';
+        }
+        
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Si el error es 403 o el refresh ya falló, limpiar y redirigir
+    if (error.response?.status === 403 || (error.response?.status === 401 && originalRequest._retry)) {
+      console.error('🚫 Error de autenticación:', error.response.status);
       
-      // Limpiar localStorage y sessionStorage completamente
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('cart');
       sessionStorage.clear();
       
-      console.log('🧹 localStorage limpiado por error de autenticación');
-      
-      // Solo redirigir si no estamos ya en la página de login
       if (window.location.pathname !== '/' && window.location.pathname !== '/register') {
-        console.log('↩️ Redirigiendo al login...');
         window.location.href = '/';
       }
     }
+    
     return Promise.reject(error);
   }
 );
