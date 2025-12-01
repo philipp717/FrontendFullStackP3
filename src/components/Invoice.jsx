@@ -4,25 +4,27 @@ import { useAuth } from '../context/AuthContext';
 
 function Invoice() {
   const [cart, setCart] = useState([]);
-  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [boleta, setBoleta] = useState(null);
+  const [metodoPago, setMetodoPago] = useState('N/A');
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
   useEffect(() => {
-    // Obtener el carrito del state o del localStorage
-    const cartData = location.state?.cart || JSON.parse(localStorage.getItem('cart') || '[]');
+    // Obtener la boleta del state (viene desde Checkout después de guardar)
+    const boletaData = location.state?.boleta;
+    const cartData = location.state?.cart;
+    const metodo = location.state?.metodoPago || 'N/A';
     
-    if (!cartData || cartData.length === 0) {
+    if (!boletaData || !cartData) {
+      // Si no hay datos, redirigir a la tienda
       navigate('/tienda');
       return;
     }
     
+    setBoleta(boletaData);
     setCart(cartData);
-
-    // Generar número de boleta
-    const randomInvoice = 'BOL-' + Date.now().toString().slice(-8);
-    setInvoiceNumber(randomInvoice);
+    setMetodoPago(metodo);
   }, [navigate, location]);
 
   const getTotalPrice = () => {
@@ -42,20 +44,30 @@ function Invoice() {
   }
 
   const handleNewPurchase = () => {
-    localStorage.removeItem('cart');
     navigate('/tienda');
   };
 
   const getCurrentDate = () => {
-    const date = new Date()
+    if (boleta?.fechaCreacion) {
+      const date = new Date(boleta.fechaCreacion);
+      return date.toLocaleDateString('es-CL', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    const date = new Date();
     return date.toLocaleDateString('es-CL', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    })
-  }
+    });
+  };
 
   return (
     <div className="container">
@@ -64,9 +76,11 @@ function Invoice() {
           <h1>🎴 Tienda Cartas Pokémon</h1>
           <h2>BOLETA DE VENTA</h2>
           <div className="invoice-info">
-            <p><strong>Boleta N°:</strong> {invoiceNumber}</p>
+            <p><strong>Boleta N°:</strong> {boleta?.numero || boleta?.id || 'N/A'}</p>
             <p><strong>Fecha:</strong> {getCurrentDate()}</p>
             <p><strong>Cliente:</strong> {user?.nombre}</p>
+            <p><strong>Método de Pago:</strong> {metodoPago}</p>
+            <p><strong>Estado:</strong> <span className="badge-success">{boleta?.estado || 'PAGADA'}</span></p>
           </div>
         </div>
 

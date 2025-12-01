@@ -84,7 +84,7 @@ function Tienda() {
       alert('El carrito está vacío');
       return;
     }
-    navigate('/invoice', { state: { cart, total: getTotalAmount() } });
+    navigate('/checkout');
   };
 
   const handleLogout = () => {

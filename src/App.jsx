@@ -8,6 +8,7 @@ import Productos from './components/Productos';
 import Boletas from './components/Boletas';
 import Usuarios from './components/Usuarios';
 import Categorias from './components/Categorias';
+import Checkout from './components/Checkout';
 import Invoice from './components/Invoice';
 
 // Componente para proteger rutas
@@ -92,6 +93,16 @@ function AppRoutes() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <Categorias />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Checkout - Todos los usuarios autenticados */}
+      <Route 
+        path="/checkout" 
+        element={
+          <ProtectedRoute>
+            <Checkout />
           </ProtectedRoute>
         } 
       />
