@@ -288,31 +288,10 @@ Este frontend está diseñado para trabajar con el backend NestJS:
    - Cambios en frontend se reflejan con hot-reload
    - Cambios en backend requieren reiniciar el servidor NestJS
 
-## Características Técnicas Destacadas
-
-### Atomic Design Pattern
-- Componentes organizados en 5 niveles jerárquicos
-- Máxima reutilización y mantenibilidad
-- Ver `ATOMIC_DESIGN.md` para documentación completa
-
 ### JWT con Refresh Token
 - Token principal válido por 1 día
 - Refresh automático antes de expiración
 - Retry de peticiones fallidas sin interrumpir al usuario
-
-### Interceptores de Axios
-- **Request:** Añade token JWT a todas las peticiones
-- **Response:** Maneja errores 401 con refresh token automático
-- **Error handling:** Mensajes de error centralizados
-
-### Validación de Props
-- Todos los componentes atómicos usan PropTypes
-- Validación en tiempo de desarrollo
-- Prevención de errores por tipos incorrectos
-
----
-
-**Desarrollado para DSY1104 - Desarrollo Fullstack II**
 
 ### Variables de Entorno (Opcional)
 Crear archivo `.env`:
@@ -320,40 +299,3 @@ Crear archivo `.env`:
 VITE_API_URL=https://tu-backend.com/api
 ```
 
-## 📚 Documentación Adicional
-
-- [React Documentation](https://react.dev/)
-- [Vite Guide](https://vitejs.dev/guide/)
-- [Axios Documentation](https://axios-http.com/docs/intro)
-- [React Router](https://reactrouter.com/)
-
-## 👨‍💻 Desarrollo
-
-Desarrollado para la **Evaluación Parcial 3** de la asignatura **DSY1104 - Desarrollo Fullstack II**.
-
-### Criterios de Evaluación Cumplidos
-
-✅ **IE3.3.2** - Sistema de gestión de sesiones en frontend  
-✅ **IE3.3.3** - Restricciones de acceso por roles  
-✅ **IE3.2.2** - Integración con API REST del backend  
-✅ **IE3.3.5** - Exposición de gestión de sesiones segura  
-✅ **IE3.3.6** - Explicación de restricciones de acceso  
-
----
-
-**¡Listo para conectar con tu backend Spring Boot!** 🚀
-- No se conecta a un backend real
-- Los datos del carrito se mantienen entre sesiones usando localStorage
-- La boleta incluye cálculo de IVA (19%)
-
-## 🔒 Protección de Rutas
-
-Las rutas `/welcome` e `/invoice` están protegidas y requieren autenticación. Si intentas acceder sin iniciar sesión, serás redirigido al login.
-
-## 🖨️ Impresión de Boleta
-
-La página de boleta incluye estilos optimizados para impresión. Usa la función de imprimir del navegador o el botón "Imprimir Boleta".
-
----
-
-Desarrollado con ❤️ para la venta de cartas Pokémon originales
