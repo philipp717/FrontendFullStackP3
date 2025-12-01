@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import BoletaService from '../services/boleta.service';
-import { MOCK_BOLETAS } from '../mocks/mockData';
 
 function Boletas() {
   const { user, logout } = useAuth();
@@ -18,11 +17,11 @@ function Boletas() {
 
   const loadBoletas = async () => {
     try {
-      // TODO: Cuando el backend esté listo
-      // const data = await BoletaService.getAll();
-      setBoletas(MOCK_BOLETAS);
+      const data = await BoletaService.getAll();
+      setBoletas(data);
     } catch (error) {
       console.error('Error al cargar boletas:', error);
+      setBoletas([]);
     } finally {
       setLoading(false);
     }
@@ -52,9 +51,6 @@ function Boletas() {
               </>
             )}
             <li className="active">📋 Boletas</li>
-            {user?.role === 'ADMIN' && (
-              <li onClick={() => navigate('/usuarios')}>👥 Usuarios</li>
-            )}
             <li onClick={() => navigate('/tienda')}>🛒 Tienda</li>
           </ul>
         </nav>

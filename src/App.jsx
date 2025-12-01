@@ -6,7 +6,6 @@ import Dashboard from './components/Dashboard';
 import Tienda from './components/Tienda';
 import Productos from './components/Productos';
 import Boletas from './components/Boletas';
-import Usuarios from './components/Usuarios';
 import Categorias from './components/Categorias';
 import Checkout from './components/Checkout';
 import Invoice from './components/Invoice';
@@ -73,16 +72,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute roles={['ADMIN', 'VENDEDOR']}>
             <Boletas />
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* Usuarios - Solo ADMIN */}
-      <Route 
-        path="/usuarios" 
-        element={
-          <ProtectedRoute roles={['ADMIN']}>
-            <Usuarios />
           </ProtectedRoute>
         } 
       />

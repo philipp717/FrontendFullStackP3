@@ -145,7 +145,6 @@ function Productos() {
             <li className="active">📦 Productos</li>
             <li onClick={() => navigate('/categorias')}>🏷️ Categorías</li>
             <li onClick={() => navigate('/boletas')}>📋 Boletas</li>
-            <li onClick={() => navigate('/usuarios')}>👥 Usuarios</li>
             <li onClick={() => navigate('/tienda')}>🛒 Tienda</li>
           </ul>
         </nav>

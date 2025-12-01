@@ -48,15 +48,6 @@ export const API_ENDPOINTS = {
     BY_BOLETA: (boletaId) => `/boletas/${boletaId}/detalles`,
   },
   
-  // Usuarios
-  USUARIOS: {
-    LIST: '/usuarios',
-    CREATE: '/usuarios',
-    UPDATE: (id) => `/usuarios/${id}`,
-    DELETE: (id) => `/usuarios/${id}`,
-    DETAIL: (id) => `/usuarios/${id}`,
-  },
-  
   // Categorías
   CATEGORIAS: {
     LIST: '/categorias',

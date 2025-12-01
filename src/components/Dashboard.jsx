@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProductoService from '../services/producto.service';
 import BoletaService from '../services/boleta.service';
-import UsuarioService from '../services/usuario.service';
 import CategoriaService from '../services/categoria.service';
 
 function Dashboard() {
@@ -12,7 +11,6 @@ function Dashboard() {
   const [stats, setStats] = useState({
     totalProductos: 0,
     totalBoletas: 0,
-    totalUsuarios: 0,
     totalCategorias: 0
   });
   const [loading, setLoading] = useState(true);
@@ -24,17 +22,15 @@ function Dashboard() {
   const loadStats = async () => {
     try {
       // Cargar datos en paralelo
-      const [productos, boletas, usuarios, categorias] = await Promise.all([
+      const [productos, boletas, categorias] = await Promise.all([
         ProductoService.getAll().catch(() => []),
         BoletaService.getAll().catch(() => []),
-        user?.role === 'ADMIN' ? UsuarioService.getAll().catch(() => []) : Promise.resolve([]),
         CategoriaService.getAll().catch(() => [])
       ]);
 
       setStats({
         totalProductos: productos.length || 0,
         totalBoletas: boletas.length || 0,
-        totalUsuarios: usuarios.length || 0,
         totalCategorias: categorias.length || 0
       });
     } catch (error) {
@@ -72,14 +68,6 @@ function Dashboard() {
       icon: '🏷️',
       color: '#FFD700',
       path: '/categorias',
-      roles: ['ADMIN']
-    },
-    {
-      title: 'Usuarios',
-      count: stats.totalUsuarios,
-      icon: '👥',
-      color: '#FF6B6B',
-      path: '/usuarios',
       roles: ['ADMIN']
     },
     {
@@ -188,9 +176,9 @@ function Dashboard() {
                   <span>➕</span>
                   <span>Nuevo Producto</span>
                 </button>
-                <button className="action-btn" onClick={() => navigate('/usuarios')}>
-                  <span>👤</span>
-                  <span>Nuevo Usuario</span>
+                <button className="action-btn" onClick={() => navigate('/categorias')}>
+                  <span>🏷️</span>
+                  <span>Nueva Categoría</span>
                 </button>
               </>
             )}
